@@ -23,7 +23,7 @@ DEFAULT_PARAMS = {
     'Q_lr': 0.001,  # critic learning rate
     'pi_lr': 0.001,  # actor learning rate
     'buffer_size': int(1E6),  # for experience replay
-    'polyak': 0.95,  # polyak averaging coefficient
+    'polyak': 0.3,  # polyak averaging coefficient
     'action_l2': 1.0,  # quadratic penalty on actions (before rescaling by max_u)
     'clip_obs': 200.,
     'scope': 'ddpg',  # can be tweaked for testing
