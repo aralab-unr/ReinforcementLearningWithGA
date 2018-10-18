@@ -4,6 +4,7 @@ import sys
 import click
 import numpy as np
 import json
+import random
 from mpi4py import MPI
 
 from baselines import logger
@@ -38,7 +39,10 @@ def train(policy, rollout_worker, evaluator,
     for epoch in range(n_epochs):
         # train
         rollout_worker.clear_history()
-        for _ in range(n_cycles):
+        for _ in range(n_cycles):            
+            #logger.info('Gamma is :')
+            #logger.info(config.DEFAULT_PARAMS['gamma'])
+            #config.DEFAULT_PARAMS['gamma'] = random.uniform(0, 1)
             episode = rollout_worker.generate_rollouts()
             policy.store_episode(episode)
             for _ in range(n_batches):
@@ -61,6 +65,9 @@ def train(policy, rollout_worker, evaluator,
 
         if rank == 0:
             logger.dump_tabular()
+
+        # Saving 
+        #print('Success rate is {}'.format(rollout_worker.current_success_rate()))
 
         # save the policy if it's better than the previous ones
         success_rate = mpi_average(evaluator.current_success_rate())
