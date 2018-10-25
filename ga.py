@@ -11,22 +11,25 @@ def fitness_function(genome):
     print('String being tested is')
     print(genome)
 
-    #print('Decoded string is')
-    #print(decode_function(genome))
+    print('Decoded string is')
+    print(decode_function(genome))
 
     #setting parameter values using genome
-    polyak = 0.7 
+    polyak = decode_function(genome)
     gamma = 0.98
     epochs_default = 100
     env = 'FetchPickAndPlace-v1'
     logdir = '/tmp/openaitest2'
-    num_cpu = 4
+    num_cpu = 5
 
     #calling training to calculate number of epochs required to reach close to maximum success rate
     epochs = train.launch(env, logdir, epochs_default, num_cpu, 0, 'future', 5, 1, polyak, gamma)
     #env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return
 
-    print('EPOCHS ARE')
+    #one run is expected to converge before epochs_efault
+    #if it does not converge, either add condition here, or make number of epochs as dynamic
+
+    print('EPOCHS to converge:')
     print(epochs)
     return epochs
 
@@ -38,11 +41,11 @@ def decode_function(genome_partial):
             prod += 0
         else:
             prod += 2**abs(i-len(genome_partial)+1)
-    return prod
+    return prod/1000000
 
 # Configure the algorithm:
 population_size = 10
-genome_length = 4
+genome_length = 11
 ga = GeneticAlgorithm(fitness_function)
 ga.generate_binary_population(size=population_size, genome_length=genome_length)
 # How many pairs of individuals should be picked to mate
@@ -61,11 +64,14 @@ ga.single_point_cross_over = False # default False
 # You can call the method several times and adjust some parameters
 # (e.g. number_of_pairs, selective_pressure, mutation_rate,
 # allow_random_parent, single_point_cross_over)
-ga.run(1000)
+ga.run(200) # default 1000
 
 best_genome, best_fitness = ga.get_best_genome()
 
-#print(best_fitness)
+print("BEST CHROMOSOME IS")
+print(best_genome)
+print("It's decoded value is")
+print(decode_function(best_genome))
 
 # If you want, you can have a look at the population:
 population = ga.population
