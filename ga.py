@@ -17,14 +17,17 @@ def fitness_function(genome):
     #setting parameter values using genome
     polyak = 0.7 
     gamma = 0.98
-    epochs_default = 70
+    epochs_default = 100
     env = 'FetchPickAndPlace-v1'
-    logdir = '/tmp/openaitest1'
+    logdir = '/tmp/openaitest2'
+    num_cpu = 4
 
     #calling training to calculate number of epochs required to reach close to maximum success rate
-    epochs = train.launch(env, logdir, epochs_default, 1, 0, 'future', 5, 1, polyak, gamma)
+    epochs = train.launch(env, logdir, epochs_default, num_cpu, 0, 'future', 5, 1, polyak, gamma)
     #env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return
 
+    print('EPOCHS ARE')
+    print(epochs)
     return epochs
 
 def decode_function(genome_partial):
@@ -39,7 +42,7 @@ def decode_function(genome_partial):
 
 # Configure the algorithm:
 population_size = 10
-genome_length = 2
+genome_length = 4
 ga = GeneticAlgorithm(fitness_function)
 ga.generate_binary_population(size=population_size, genome_length=genome_length)
 # How many pairs of individuals should be picked to mate
