@@ -1,5 +1,6 @@
 import numpy as np
 import gym
+import random
 
 from baselines import logger
 from baselines.her.ddpg import DDPG
@@ -23,7 +24,7 @@ DEFAULT_PARAMS = {
     'Q_lr': 0.001,  # critic learning rate
     'pi_lr': 0.001,  # actor learning rate
     'buffer_size': int(1E6),  # for experience replay
-    'polyak': 0.7,  # polyak averaging coefficient 0.95
+    'polyak': 0.95,#round(random.uniform(0, 1), 3),  # polyak averaging coefficient 0.95
     'action_l2': 1.0,  # quadratic penalty on actions (before rescaling by max_u)
     'clip_obs': 200.,
     'scope': 'ddpg',  # can be tweaked for testing
@@ -67,7 +68,7 @@ def prepare_params(kwargs):
     ddpg_params = dict()
 
     env_name = kwargs['env_name']
-    kwargs['polyak'] = kwargs['polyak']
+    #kwargs['polyak'] = DEFAULT_PARAMS['polyak'] 
 
     def make_env():
         return gym.make(env_name)
@@ -77,7 +78,8 @@ def prepare_params(kwargs):
     kwargs['T'] = tmp_env._max_episode_steps
     tmp_env.reset()
     kwargs['max_u'] = np.array(kwargs['max_u']) if isinstance(kwargs['max_u'], list) else kwargs['max_u']
-    kwargs['gamma'] = 1. - 1. / kwargs['T']
+    #kwargs['gamma'] = 1. - 1. / kwargs['T']
+    #kwargs['gamma'] = 0.7
     if 'lr' in kwargs:
         kwargs['pi_lr'] = kwargs['lr']
         kwargs['Q_lr'] = kwargs['lr']
@@ -130,6 +132,7 @@ def configure_ddpg(dims, params, reuse=False, use_mpi=True, clip_return=True):
     sample_her_transitions = configure_her(params)
     # Extract relevant parameters.
     gamma = params['gamma']
+    #polyak = params['polyak']
     rollout_batch_size = params['rollout_batch_size']
     ddpg_params = params['ddpg_params']
 
@@ -146,6 +149,7 @@ def configure_ddpg(dims, params, reuse=False, use_mpi=True, clip_return=True):
                         'subtract_goals': simple_goal_subtract,
                         'sample_transitions': sample_her_transitions,
                         'gamma': gamma,
+                        #'polyak': polyak,
                         })
     ddpg_params['info'] = {
         'env_name': params['env_name'],

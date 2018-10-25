@@ -14,6 +14,7 @@ import baselines.her.experiment.config as config
 from baselines.her.rollout import RolloutWorker
 from baselines.her.util import mpi_fork
 
+
 from subprocess import CalledProcessError
 
 
@@ -40,9 +41,9 @@ def train(policy, rollout_worker, evaluator,
         # train
         rollout_worker.clear_history()
         for _ in range(n_cycles):            
-            #logger.info('Gamma is :')
-            #logger.info(config.DEFAULT_PARAMS['gamma'])
-            #config.DEFAULT_PARAMS['gamma'] = random.uniform(0, 1)
+            #logger.info(config.DEFAULT_PARAMS['_polyak'])
+            #config.DEFAULT_PARAMS['_polyak'] = round(random.uniform(0, 1), 3)
+            #logger.info('polyak is :')
             episode = rollout_worker.generate_rollouts()
             policy.store_episode(episode)
             for _ in range(n_batches):
@@ -71,6 +72,9 @@ def train(policy, rollout_worker, evaluator,
 
         # save the policy if it's better than the previous ones
         success_rate = mpi_average(evaluator.current_success_rate())
+        if success_rate >= 0.1:
+            print('HOW ARE YOU?')
+            break
         if rank == 0 and success_rate >= best_success_rate and save_policies:
             best_success_rate = success_rate
             logger.info('New best success rate: {}. Saving policy to {} ...'.format(best_success_rate, best_policy_path))
@@ -90,7 +94,7 @@ def train(policy, rollout_worker, evaluator,
 
 
 def launch(
-    env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return,
+    env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return, polyak_value, gamma_value,
     override_params={}, save_policies=True
 ):
     # Fork for multi-CPU MPI implementation.
@@ -124,6 +128,8 @@ def launch(
     # Prepare params.
     params = config.DEFAULT_PARAMS
     params['env_name'] = env
+    params['polyak'] = polyak_value
+    params['gamma'] = gamma_value
     params['replay_strategy'] = replay_strategy
     if env in config.DEFAULT_ENV_PARAMS:
         params.update(config.DEFAULT_ENV_PARAMS[env])  # merge env-specific parameters in
@@ -190,6 +196,8 @@ def launch(
 @click.option('--policy_save_interval', type=int, default=5, help='the interval with which policy pickles are saved. If set to 0, only the best and latest policy will be pickled.')
 @click.option('--replay_strategy', type=click.Choice(['future', 'none']), default='future', help='the HER replay strategy to be used. "future" uses HER, "none" disables HER.')
 @click.option('--clip_return', type=int, default=1, help='whether or not returns should be clipped')
+@click.option('--polyak_value', type=float, default=0.95, help='polyak averaging coefficient - Tau')
+@click.option('--gamma_value', type=float, default=0.98, help='gamma - discounting factor')
 def main(**kwargs):
     launch(**kwargs)
 
