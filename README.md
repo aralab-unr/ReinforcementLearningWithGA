@@ -14,7 +14,7 @@ Baselines requires python3 (>=3.5) with the development headers. You'll also nee
 sudo apt-get update && sudo apt-get install cmake libopenmpi-dev python3-dev zlib1g-dev
 ```
 
-##Genetic Algorithm (GA)
+## Genetic Algorithm (GA)
 Follow the below github repository to install GA library
 ```bash
 https://github.com/chovanecm/python-genetic-algorithm
