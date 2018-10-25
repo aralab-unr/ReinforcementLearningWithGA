@@ -11,8 +11,8 @@ def fitness_function(genome):
     print('String being tested is')
     print(genome)
 
-    print('Decoded string is')
-    print(decode_function(genome))
+    #print('Decoded string is')
+    #print(decode_function(genome))
 
     #setting parameter values using genome
     polyak = 0.7 
@@ -30,11 +30,11 @@ def fitness_function(genome):
 def decode_function(genome_partial):
 
     prod = 0
-    for i in reversed(list(enumerate(genome_partial))):
-        if genome_partial[i] == false:
+    for i,e in reversed(list(enumerate(genome_partial))):
+        if e == False:
             prod += 0
         else:
-            prod += genome_partial[i] * 2**abs(i[0]-len(genome_partial)+1)
+            prod += 2**abs(i-len(genome_partial)+1)
     return prod
 
 # Configure the algorithm:
