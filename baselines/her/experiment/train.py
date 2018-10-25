@@ -72,9 +72,11 @@ def train(policy, rollout_worker, evaluator,
 
         # save the policy if it's better than the previous ones
         success_rate = mpi_average(evaluator.current_success_rate())
-        if success_rate >= 0.1:
-            print('HOW ARE YOU?')
-            break
+
+        #checking if success rate has reached close to maximum, if so, return number of epochs
+        if success_rate >= 0.95:
+            print('REACHED CLOSE TO MAX SUCCESS RATE')
+            return epoch+1
         if rank == 0 and success_rate >= best_success_rate and save_policies:
             best_success_rate = success_rate
             logger.info('New best success rate: {}. Saving policy to {} ...'.format(best_success_rate, best_policy_path))
@@ -180,11 +182,13 @@ def launch(
     evaluator = RolloutWorker(params['make_env'], policy, dims, logger, **eval_params)
     evaluator.seed(rank_seed)
 
-    train(
+    epochs = train(
         logdir=logdir, policy=policy, rollout_worker=rollout_worker,
         evaluator=evaluator, n_epochs=n_epochs, n_test_rollouts=params['n_test_rollouts'],
         n_cycles=params['n_cycles'], n_batches=params['n_batches'],
         policy_save_interval=policy_save_interval, save_policies=save_policies)
+
+    return epochs
 
 
 @click.command()

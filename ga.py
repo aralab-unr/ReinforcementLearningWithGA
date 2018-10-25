@@ -1,18 +1,23 @@
 from mchgenalg import GeneticAlgorithm
 import numpy as np
 import baselines.her.experiment.train as train
-#from baselines.her.experiment.train import launch
-
-train.launch('FetchPickAndPlace-v1', '/tmp/openaitest', 50, 1, 0, 'future', 5, 1, 0.7, 0.95)
-#env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return
-
 
 # First, define function that will be used to evaluate the fitness
 def fitness_function(genome):
     # let's count the number of one-values in the genome
     # this will be our fitness
-    sum = np.sum(genome)
-    return sum
+    #sum = np.sum(genome)
+
+    #setting parameter values using genome
+    polyak = 0.7
+    gamma = 0.98
+    epochs_default = 70
+    
+    #calling training to calculate number of epochs required to reach close to maximum success rate
+    epochs = train.launch('FetchPickAndPlace-v1', '/tmp/openaitest', epochs_default, 1, 0, 'future', 5, 1, polyak, gamma)
+    #env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return
+
+    return epochs
 
 # Configure the algorithm:
 population_size = 10
