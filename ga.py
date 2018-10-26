@@ -1,5 +1,6 @@
 from mchgenalg import GeneticAlgorithm
 import numpy as np
+from importlib import reload 
 import baselines.her.experiment.train as train
 
 # First, define function that will be used to evaluate the fitness
@@ -7,20 +8,21 @@ def fitness_function(genome):
     # let's count the number of one-values in the genome
     # this will be our fitness
     #sum = np.sum(genome)
+    reload(train)
 
-    print('String being tested is')
-    print(genome)
+    #print('String being tested is')
+    #print(genome)
 
-    print('Decoded string is')
-    print(decode_function(genome))
+    #print('Decoded string is')
+    #print(decode_function(genome))
 
     #setting parameter values using genome
     polyak = decode_function(genome)
     gamma = 0.98
-    epochs_default = 100
+    epochs_default = 1
     env = 'FetchPickAndPlace-v1'
-    logdir = '/tmp/openaitest2'
-    num_cpu = 5
+    logdir ='/tmp/openaiGA'
+    num_cpu = 4
 
     #calling training to calculate number of epochs required to reach close to maximum success rate
     epochs = train.launch(env, logdir, epochs_default, num_cpu, 0, 'future', 5, 1, polyak, gamma)
@@ -29,7 +31,10 @@ def fitness_function(genome):
     #one run is expected to converge before epochs_efault
     #if it does not converge, either add condition here, or make number of epochs as dynamic
 
-    print('EPOCHS to converge:')
+    if epochs == None:
+        epochs = epochs_default
+
+    print('EPOCHS taken to converge:')
     print(epochs)
     return epochs
 

@@ -4,7 +4,6 @@ import sys
 import click
 import numpy as np
 import json
-import random
 from mpi4py import MPI
 
 from baselines import logger
@@ -129,6 +128,8 @@ def launch(
 
     # Prepare params.
     params = config.DEFAULT_PARAMS
+    #print('DEFAULT_PARAMS ARE')
+    #print(config.DEFAULT_PARAMS)
     params['env_name'] = env
     params['polyak'] = polyak_value
     params['gamma'] = gamma_value
@@ -136,8 +137,14 @@ def launch(
     if env in config.DEFAULT_ENV_PARAMS:
         params.update(config.DEFAULT_ENV_PARAMS[env])  # merge env-specific parameters in
     params.update(**override_params)  # makes it possible to override any parameter
+
+#    try:
     with open(os.path.join(logger.get_dir(), 'params.json'), 'w') as f:
+        #Remove str
         json.dump(params, f)
+#    except TypeError:
+#        print("not serializable error occured")
+
     params = config.prepare_params(params)
     config.log_params(params, logger=logger)
 
