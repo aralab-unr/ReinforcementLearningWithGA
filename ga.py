@@ -24,8 +24,12 @@ def fitness_function(genome):
     #shutil.rmtree(path)
 
     #setting parameter values using genome
-    polyak = decode_function(genome)
-    gamma = 0.98
+    polyak = decode_function(genome[0:10])
+    if polyak > 1:
+        polyak = 1
+    gamma = decode_function(genome[11:21])
+    if gamma > 1:
+        gamma = 1
     epochs_default = 80 #80
     env = 'FetchPickAndPlace-v1'
     logdir ='/tmp/openaiGA'
@@ -60,11 +64,11 @@ def decode_function(genome_partial):
             prod += 0
         else:
             prod += 2**abs(i-len(genome_partial)+1)
-    return prod/1000000
+    return prod/1000
 
 # Configure the algorithm:
 population_size = 10
-genome_length = 11
+genome_length = 22
 ga = GeneticAlgorithm(fitness_function)
 #importlib.reload(train)
 ga.generate_binary_population(size=population_size, genome_length=genome_length)
@@ -91,7 +95,8 @@ best_genome, best_fitness = ga.get_best_genome()
 print("BEST CHROMOSOME IS")
 print(best_genome)
 print("It's decoded value is")
-print(decode_function(best_genome))
+print("Tau = " + decode_function(best_genome[0:10]))
+print("Gamma = " + decode_function(best_genome[11:22]))
 
 # If you want, you can have a look at the population:
 population = ga.population
