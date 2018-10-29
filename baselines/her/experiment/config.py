@@ -47,7 +47,6 @@ DEFAULT_PARAMS = {
     'norm_clip': 5,  # normalized observations are cropped to this values
 }
 
-
 CACHED_ENVS = {}
 
 
@@ -77,8 +76,6 @@ def prepare_params(kwargs):
     assert hasattr(tmp_env, '_max_episode_steps')
     kwargs['T'] = tmp_env._max_episode_steps
     tmp_env.reset()
-    #Remove comment for max_u
-    #kwargs['max_u'] = DEFAULT_PARAMS['_max_u']
     kwargs['max_u'] = np.array(kwargs['max_u']) if isinstance(kwargs['max_u'], list) else kwargs['max_u']
     #kwargs['gamma'] = 1. - 1. / kwargs['T']
     #kwargs['gamma'] = 0.7

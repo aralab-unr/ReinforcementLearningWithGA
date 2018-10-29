@@ -4,6 +4,7 @@ import sys
 import click
 import numpy as np
 import json
+import sys
 from mpi4py import MPI
 
 from baselines import logger
@@ -73,9 +74,18 @@ def train(policy, rollout_worker, evaluator,
         success_rate = mpi_average(evaluator.current_success_rate())
 
         #checking if success rate has reached close to maximum, if so, return number of epochs
-        if success_rate >= 0.95:
-            print('REACHED CLOSE TO MAX SUCCESS RATE')
-            return epoch+1
+        if success_rate >= 0.95: #0.95
+            logger.info('Saving epochs to file...')
+            with open('epochs.txt', 'w') as output:
+                output.write(str(epoch+1))
+            #Exit training if maximum success rate reached
+            sys.exit()
+        if epoch==n_epochs-1
+            logger.info('Maximum success rate not reached. Saving maximum epochs to file...')
+            with open('epochs.txt', 'w') as output:
+                output.write(str(n_epochs))
+            sys.exit()   
+
         if rank == 0 and success_rate >= best_success_rate and save_policies:
             best_success_rate = success_rate
             logger.info('New best success rate: {}. Saving policy to {} ...'.format(best_success_rate, best_policy_path))
@@ -138,12 +148,8 @@ def launch(
         params.update(config.DEFAULT_ENV_PARAMS[env])  # merge env-specific parameters in
     params.update(**override_params)  # makes it possible to override any parameter
 
-#    try:
     with open(os.path.join(logger.get_dir(), 'params.json'), 'w') as f:
-        #Remove str
         json.dump(params, f)
-#    except TypeError:
-#        print("not serializable error occured")
 
     params = config.prepare_params(params)
     config.log_params(params, logger=logger)
