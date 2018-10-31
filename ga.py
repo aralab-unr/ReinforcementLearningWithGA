@@ -27,11 +27,11 @@ def fitness_function(genome):
     polyak = decode_function(genome[0:10])
     if polyak > 1:
         polyak = 1
-    gamma = decode_function(genome[11:21])
+    gamma = decode_function(genome[11:21])*1000
     if gamma > 1:
         gamma = 1
-    epochs_default = 80 #80
-    env = 'FetchPickAndPlace-v1'
+    epochs_default = 70 #80
+    env = 'FetchPush-v1'
     logdir ='/tmp/openaiGA'
     num_cpu = 4
 
@@ -47,7 +47,7 @@ def fitness_function(genome):
     #one run is expected to converge before epochs_efault
     #if it does not converge, either add condition here, or make number of epochs as dynamic
 
-    epochs = int(file.readline(1))
+    epochs = int(file.read())
 
     if epochs == None:
         epochs = epochs_default
@@ -64,7 +64,7 @@ def decode_function(genome_partial):
             prod += 0
         else:
             prod += 2**abs(i-len(genome_partial)+1)
-    return prod/1000
+    return prod/1000000
 
 # Configure the algorithm:
 population_size = 10
@@ -88,7 +88,7 @@ ga.single_point_cross_over = False # default False
 # You can call the method several times and adjust some parameters
 # (e.g. number_of_pairs, selective_pressure, mutation_rate,
 # allow_random_parent, single_point_cross_over)
-ga.run(200) # default 1000
+ga.run(100) # default 1000
 
 best_genome, best_fitness = ga.get_best_genome()
 
