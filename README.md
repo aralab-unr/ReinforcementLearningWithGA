@@ -19,6 +19,12 @@ Follow the below github repository to install GA library
 ```bash
 https://github.com/chovanecm/python-genetic-algorithm
 ```
+
+## Genetic Algorithm (GA)
+In order to run GA to find parameters for DDPG + HER algorithm:
+```bash
+python3 ga.py
+```
     
 ### Mac OS X
 Installation of system packages on Mac requires [Homebrew](https://brew.sh). With Homebrew installed, run the follwing:
@@ -142,24 +148,4 @@ tensorboard --logdir=$OPENAI_LOGDIR
 - [PPO1](baselines/ppo1) (obsolete version, left here temporarily)
 - [PPO2](baselines/ppo2) 
 - [TRPO](baselines/trpo_mpi)
-
-
-
-## Benchmarks
-Results of benchmarks on Mujoco (1M timesteps) and Atari (10M timesteps) are available 
-[here for Mujoco](https://htmlpreview.github.com/?https://github.com/openai/baselines/blob/master/benchmarks_mujoco1M.htm) 
-and
-[here for Atari](https://htmlpreview.github.com/?https://github.com/openai/baselines/blob/master/benchmarks_atari10M.htm) 
-respectively. Note that these results may be not on the latest version of the code, particular commit hash with which results were obtained is specified on the benchmarks page. 
-
-To cite this repository in publications:
-
-    @misc{baselines,
-      author = {Dhariwal, Prafulla and Hesse, Christopher and Klimov, Oleg and Nichol, Alex and Plappert, Matthias and Radford, Alec and Schulman, John and Sidor, Szymon and Wu, Yuhuai and Zhokhov, Peter},
-      title = {OpenAI Baselines},
-      year = {2017},
-      publisher = {GitHub},
-      journal = {GitHub repository},
-      howpublished = {\url{https://github.com/openai/baselines}},
-    }
 

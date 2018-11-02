@@ -2,32 +2,17 @@ from mchgenalg import GeneticAlgorithm
 import mchgenalg
 import numpy as np
 import sys
-#import importlib
-#import baselines
-#import baselines.her.experiment.train as train
 import os
 import shutil
 
 # First, define function that will be used to evaluate the fitness
 def fitness_function(genome):
-    # let's count the number of one-values in the genome
-    # this will be our fitness
-    #sum = np.sum(genome)
-
-    #print('String being tested is')
-    #print(genome)
-
-    #print('Decoded string is')
-    #print(decode_function(genome))
-
-    #path = '/usr/lib/python3.5/wsgiref/__pycache__'
-    #shutil.rmtree(path)
 
     #setting parameter values using genome
     polyak = decode_function(genome[0:10])
     if polyak > 1:
         polyak = 1
-    gamma = decode_function(genome[11:21])*1000
+    gamma = decode_function(genome[11:21])
     if gamma > 1:
         gamma = 1
     epochs_default = 70 #80
@@ -64,31 +49,33 @@ def decode_function(genome_partial):
             prod += 0
         else:
             prod += 2**abs(i-len(genome_partial)+1)
-    return prod/1000000
+    return prod/1000
 
 # Configure the algorithm:
 population_size = 10
 genome_length = 22
 ga = GeneticAlgorithm(fitness_function)
-#importlib.reload(train)
 ga.generate_binary_population(size=population_size, genome_length=genome_length)
+
 # How many pairs of individuals should be picked to mate
 ga.number_of_pairs = 5
+
 # Selective pressure from interval [1.0, 2.0]
 # the lower value, the less will the fitness play role
 ga.selective_pressure = 1.5
 ga.mutation_rate = 0.1
+
 # If two parents have the same genotype, ignore them and generate TWO random parents
 # This helps preventing premature convergence
 ga.allow_random_parent = True # default True
 # Use single point crossover instead of uniform crossover
 ga.single_point_cross_over = False # default False
 
-# Run 1000 iteration of the algorithm
+# Run 100 iteration of the algorithm
 # You can call the method several times and adjust some parameters
 # (e.g. number_of_pairs, selective_pressure, mutation_rate,
 # allow_random_parent, single_point_cross_over)
-ga.run(100) # default 1000
+ga.run(100)
 
 best_genome, best_fitness = ga.get_best_genome()
 
@@ -100,8 +87,6 @@ print("Gamma = " + decode_function(best_genome[11:22]))
 
 # If you want, you can have a look at the population:
 population = ga.population
-#print(population)
 
 # and the fitness of each element:
 fitness_vector = ga.get_fitness_vector()
-#print(fitness_vector)
