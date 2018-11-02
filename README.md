@@ -20,7 +20,7 @@ Follow the below github repository to install GA library
 https://github.com/chovanecm/python-genetic-algorithm
 ```
 
-## Genetic Algorithm (GA)
+## Genetic Algorithm (GA) on DDPG + HER
 In order to run GA to find parameters for DDPG + HER algorithm:
 ```bash
 python3 ga.py
