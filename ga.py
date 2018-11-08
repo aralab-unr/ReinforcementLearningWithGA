@@ -1,15 +1,18 @@
 from mchgenalg import GeneticAlgorithm
 import mchgenalg
 import numpy as np
-import sys
-#import importlib
-#import baselines
-#import baselines.her.experiment.train as train
 import os
-import shutil
+
+timesEvaluated = 0
+
 
 # First, define function that will be used to evaluate the fitness
 def fitness_function(genome):
+
+    global timesEvaluated
+    timesEvaluated += 1
+
+    print("Function evaluated "+str(timesEvaluated)+ " times")
     # let's count the number of one-values in the genome
     # this will be our fitness
     #sum = np.sum(genome)
@@ -30,10 +33,10 @@ def fitness_function(genome):
     gamma = decode_function(genome[11:21])
     if gamma > 1:
         gamma = 1
-    epochs_default = 80 #80
+    epochs_default = 150 #80
     env = 'FetchPickAndPlace-v1'
     logdir ='/tmp/openaiGA'
-    num_cpu = 4
+    num_cpu = 1
 
     query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma)
 
@@ -47,7 +50,7 @@ def fitness_function(genome):
     #one run is expected to converge before epochs_efault
     #if it does not converge, either add condition here, or make number of epochs as dynamic
 
-    epochs = int(file.readline(1))
+    epochs = int(file.read())
 
     if epochs == None:
         epochs = epochs_default
@@ -88,7 +91,7 @@ ga.single_point_cross_over = False # default False
 # You can call the method several times and adjust some parameters
 # (e.g. number_of_pairs, selective_pressure, mutation_rate,
 # allow_random_parent, single_point_cross_over)
-ga.run(200) # default 1000
+ga.run(10) # default 1000
 
 best_genome, best_fitness = ga.get_best_genome()
 
