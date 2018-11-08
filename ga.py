@@ -4,6 +4,7 @@ import numpy as np
 import os
 
 timesEvaluated = 0
+bestepochs = -1
 
 # First, define function that will be used to evaluate the fitness
 def fitness_function(genome):
@@ -50,6 +51,14 @@ def fitness_function(genome):
 
     if epochs == None:
         epochs = epochs_default
+
+    global bestepochs
+    if bestepochs == -1:
+        bestepochs = epochs
+    if epochs < bestepochs:
+        bestepochs = epochs
+
+    print("Best epochs so far : "+str(bestepochs))
 
     print('EPOCHS taken to converge:')
     print(epochs)
