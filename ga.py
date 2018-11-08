@@ -35,8 +35,9 @@ def fitness_function(genome):
     logdir ='/tmp/openaiGA'
     num_cpu = 1
 
-    query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma) + " --Q_learning=" + str(Q_lr) + " --pi_learning" + str(pi_lr) + " --random_epsilon" + str(random_eps)
- + 
+    query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma) + " --q_learning=" + str(Q_lr) + " --pi_learning=" + str(pi_lr) + " --random_epsilon=" + str(random_eps)
+
+    print(query)
     #calling training to calculate number of epochs required to reach close to maximum success rate
     os.system(query)
     #epochs = train.launch(env, logdir, epochs_default, num_cpu, 0, 'future', 5, 1, polyak, gamma)
@@ -107,6 +108,9 @@ print(best_genome)
 print("It's decoded value is")
 print("Tau = " + decode_function(best_genome[0:10]))
 print("Gamma = " + decode_function(best_genome[11:22]))
+print("Q_learning = " + decode_function(best_genome[23:33]))
+print("pi_learning = " + decode_function(best_genome[34:44]))
+print("random_epsilon = " + decode_function(best_genome[45:55]))
 
 # If you want, you can have a look at the population:
 population = ga.population

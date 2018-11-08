@@ -105,8 +105,8 @@ def train(policy, rollout_worker, evaluator,
 
 
 def launch(
-    env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return, polyak_value, gamma_value, Q_learning, pi_learning, random_epsilon
-    override_params={}, save_policies=True
+    env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return, polyak_value, gamma_value, q_learning, pi_learning, random_epsilon,
+    override_params={}, save_policies=True,
 ):
     # Fork for multi-CPU MPI implementation.
     if num_cpu > 1:
@@ -143,7 +143,7 @@ def launch(
     params['env_name'] = env
     params['polyak'] = polyak_value
     params['gamma'] = gamma_value
-    params['Q_lr'] = Q_learning
+    params['Q_lr'] = q_learning
     params['pi_lr'] = pi_learning
     params['random_eps'] = random_epsilon
     params['replay_strategy'] = replay_strategy
@@ -218,7 +218,7 @@ def launch(
 @click.option('--clip_return', type=int, default=1, help='whether or not returns should be clipped')
 @click.option('--polyak_value', type=float, default=0.95, help='polyak averaging coefficient - Tau')
 @click.option('--gamma_value', type=float, default=0.98, help='gamma - discounting factor')
-@click.option('--Q_learning', type=float, default=0.001, help='critic learning rate')
+@click.option('--q_learning', type=float, default=0.001, help='critic learning rate')
 @click.option('--pi_learning', type=float, default=0.001, help='actor learning rate')
 @click.option('--random_epsilon', type=float, default=0.3, help='percentage of time a random action is taken')
 def main(**kwargs):
