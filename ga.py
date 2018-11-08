@@ -1,12 +1,17 @@
 from mchgenalg import GeneticAlgorithm
 import mchgenalg
 import numpy as np
-import sys
 import os
-import shutil
+
+timesEvaluated = 0
 
 # First, define function that will be used to evaluate the fitness
 def fitness_function(genome):
+
+    global timesEvaluated
+    timesEvaluated += 1
+
+    print("Fitness function invoked "+str(timesEvaluated)+" times")
 
     #setting parameter values using genome
     polyak = decode_function(genome[0:10])
@@ -15,13 +20,22 @@ def fitness_function(genome):
     gamma = decode_function(genome[11:21])
     if gamma > 1:
         gamma = 1
+    Q_lr = decode_function(genome[22:33])
+    if Q_lr > 1:
+        Q_lr = 1
+    pi_lr = decode_function(genome[34:44])
+    if pi_lr > 1:
+        pi_lr = 1
+    random_eps = decode_function(genome[45:55])
+    if random_eps > 1:
+        random_eps = 1
     epochs_default = 70 #80
     env = 'FetchPush-v1'
     logdir ='/tmp/openaiGA'
     num_cpu = 4
 
-    query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma)
-
+    query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma) + " --Q_learning=" + str(Q_lr) + " --pi_learning" + str(pi_lr) + " --random_epsilon" + str(random_eps)
+ + 
     #calling training to calculate number of epochs required to reach close to maximum success rate
     os.system(query)
     #epochs = train.launch(env, logdir, epochs_default, num_cpu, 0, 'future', 5, 1, polyak, gamma)
@@ -53,7 +67,7 @@ def decode_function(genome_partial):
 
 # Configure the algorithm:
 population_size = 10
-genome_length = 22
+genome_length = 55
 ga = GeneticAlgorithm(fitness_function)
 ga.generate_binary_population(size=population_size, genome_length=genome_length)
 
@@ -75,7 +89,7 @@ ga.single_point_cross_over = False # default False
 # You can call the method several times and adjust some parameters
 # (e.g. number_of_pairs, selective_pressure, mutation_rate,
 # allow_random_parent, single_point_cross_over)
-ga.run(100)
+ga.run(10)
 
 best_genome, best_fitness = ga.get_best_genome()
 
