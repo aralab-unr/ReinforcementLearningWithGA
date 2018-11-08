@@ -74,17 +74,17 @@ def train(policy, rollout_worker, evaluator,
         success_rate = mpi_average(evaluator.current_success_rate())
 
         #checking if success rate has reached close to maximum, if so, return number of epochs
-        if success_rate >= 0.85: #0.95
-            logger.info('Saving epochs to file...')
-            with open('epochs.txt', 'w') as output:
-                output.write(str(epoch+1))
+        #if success_rate >= 0.85: #0.95
+            #logger.info('Saving epochs to file...')
+            #with open('epochs.txt', 'w') as output:
+            #    output.write(str(epoch+1))
             #Exit training if maximum success rate reached
-            sys.exit()
-        if epoch==(n_epochs-1):
-            logger.info('Maximum success rate not reached. Saving maximum epochs to file...')
-            with open('epochs.txt', 'w') as output:
-                output.write(str(n_epochs))
-            sys.exit()   
+            #sys.exit()
+        #if epoch==(n_epochs-1):
+            #logger.info('Maximum success rate not reached. Saving maximum epochs to file...')
+            #with open('epochs.txt', 'w') as output:
+            #    output.write(str(n_epochs))
+            #sys.exit()   
 
         if rank == 0 and success_rate >= best_success_rate and save_policies:
             best_success_rate = success_rate
@@ -105,7 +105,7 @@ def train(policy, rollout_worker, evaluator,
 
 
 def launch(
-    env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return, polyak_value, gamma_value,
+    env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return, polyak_value, gamma_value, Q_learning, pi_learning, random_epsilon
     override_params={}, save_policies=True
 ):
     # Fork for multi-CPU MPI implementation.
@@ -143,6 +143,9 @@ def launch(
     params['env_name'] = env
     params['polyak'] = polyak_value
     params['gamma'] = gamma_value
+    params['Q_lr'] = Q_learning
+    params['pi_lr'] = pi_learning
+    params['random_eps'] = random_epsilon
     params['replay_strategy'] = replay_strategy
     if env in config.DEFAULT_ENV_PARAMS:
         params.update(config.DEFAULT_ENV_PARAMS[env])  # merge env-specific parameters in
@@ -215,6 +218,9 @@ def launch(
 @click.option('--clip_return', type=int, default=1, help='whether or not returns should be clipped')
 @click.option('--polyak_value', type=float, default=0.95, help='polyak averaging coefficient - Tau')
 @click.option('--gamma_value', type=float, default=0.98, help='gamma - discounting factor')
+@click.option('--Q_learning', type=float, default=0.001, help='critic learning rate')
+@click.option('--pi_learning', type=float, default=0.001, help='actor learning rate')
+@click.option('--random_epsilon', type=float, default=0.3, help='percentage of time a random action is taken')
 def main(**kwargs):
     launch(**kwargs)
 

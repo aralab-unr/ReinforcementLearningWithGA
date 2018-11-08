@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 timesEvaluated = 0
-
+bestepochs = -1
 
 # First, define function that will be used to evaluate the fitness
 def fitness_function(genome):
@@ -12,19 +12,7 @@ def fitness_function(genome):
     global timesEvaluated
     timesEvaluated += 1
 
-    print("Function evaluated "+str(timesEvaluated)+ " times")
-    # let's count the number of one-values in the genome
-    # this will be our fitness
-    #sum = np.sum(genome)
-
-    #print('String being tested is')
-    #print(genome)
-
-    #print('Decoded string is')
-    #print(decode_function(genome))
-
-    #path = '/usr/lib/python3.5/wsgiref/__pycache__'
-    #shutil.rmtree(path)
+    print("Fitness function invoked "+str(timesEvaluated)+" times")
 
     #setting parameter values using genome
     polyak = decode_function(genome[0:10])
@@ -33,13 +21,22 @@ def fitness_function(genome):
     gamma = decode_function(genome[11:21])
     if gamma > 1:
         gamma = 1
+    Q_lr = decode_function(genome[22:33])
+    if Q_lr > 1:
+        Q_lr = 1
+    pi_lr = decode_function(genome[34:44])
+    if pi_lr > 1:
+        pi_lr = 1
+    random_eps = decode_function(genome[45:55])
+    if random_eps > 1:
+        random_eps = 1
     epochs_default = 150 #80
-    env = 'FetchPickAndPlace-v1'
+    env = 'FetchPush-v1'
     logdir ='/tmp/openaiGA'
     num_cpu = 1
 
-    query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma)
-
+    query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma) + " --Q_learning=" + str(Q_lr) + " --pi_learning" + str(pi_lr) + " --random_epsilon" + str(random_eps)
+ + 
     #calling training to calculate number of epochs required to reach close to maximum success rate
     os.system(query)
     #epochs = train.launch(env, logdir, epochs_default, num_cpu, 0, 'future', 5, 1, polyak, gamma)
@@ -54,6 +51,14 @@ def fitness_function(genome):
 
     if epochs == None:
         epochs = epochs_default
+
+    global bestepochs
+    if bestepochs == -1:
+        bestepochs = epochs
+    if epochs < bestepochs:
+        bestepochs = epochs
+
+    print("Best epochs so far : "+str(bestepochs))
 
     print('EPOCHS taken to converge:')
     print(epochs)
@@ -71,23 +76,25 @@ def decode_function(genome_partial):
 
 # Configure the algorithm:
 population_size = 10
-genome_length = 22
+genome_length = 55
 ga = GeneticAlgorithm(fitness_function)
-#importlib.reload(train)
 ga.generate_binary_population(size=population_size, genome_length=genome_length)
+
 # How many pairs of individuals should be picked to mate
 ga.number_of_pairs = 5
+
 # Selective pressure from interval [1.0, 2.0]
 # the lower value, the less will the fitness play role
 ga.selective_pressure = 1.5
 ga.mutation_rate = 0.1
+
 # If two parents have the same genotype, ignore them and generate TWO random parents
 # This helps preventing premature convergence
 ga.allow_random_parent = True # default True
 # Use single point crossover instead of uniform crossover
 ga.single_point_cross_over = False # default False
 
-# Run 1000 iteration of the algorithm
+# Run 100 iteration of the algorithm
 # You can call the method several times and adjust some parameters
 # (e.g. number_of_pairs, selective_pressure, mutation_rate,
 # allow_random_parent, single_point_cross_over)
@@ -103,8 +110,6 @@ print("Gamma = " + decode_function(best_genome[11:22]))
 
 # If you want, you can have a look at the population:
 population = ga.population
-#print(population)
 
 # and the fitness of each element:
 fitness_vector = ga.get_fitness_vector()
-#print(fitness_vector)
