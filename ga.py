@@ -21,21 +21,24 @@ def fitness_function(genome):
     gamma = decode_function(genome[11:21])
     if gamma > 1:
         gamma = 1
-    Q_lr = decode_function(genome[22:33])
+    Q_lr = 0.001 #decode_function(genome[22:33])
     if Q_lr > 1:
         Q_lr = 1
-    pi_lr = decode_function(genome[34:44])
+    pi_lr = 0.001 #decode_function(genome[34:44])
     if pi_lr > 1:
         pi_lr = 1
     random_eps = decode_function(genome[45:55])
     if random_eps > 1:
         random_eps = 1
-    epochs_default = 150 #80
+    noise_eps = decode_function(genome[56:66])
+    if noise_eps > 1:
+        noise_eps = 1
+    epochs_default = 50 #80
     env = 'FetchPush-v1'
     logdir ='/tmp/openaiGA'
-    num_cpu = 1
+    num_cpu = 4
 
-    query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma) + " --q_learning=" + str(Q_lr) + " --pi_learning=" + str(pi_lr) + " --random_epsilon=" + str(random_eps)
+    query = "python3 -m baselines.her.experiment.train --env="+env+" --logdir="+logdir+" --n_epochs="+str(epochs_default)+" --num_cpu="+str(num_cpu) + " --polyak_value="+ str(polyak) + " --gamma_value=" + str(gamma) + " --q_learning=" + str(Q_lr) + " --pi_learning=" + str(pi_lr) + " --random_epsilon=" + str(random_eps) + " --noise_epsilon=" + str(noise_eps)
 
     print(query)
     #calling training to calculate number of epochs required to reach close to maximum success rate
@@ -76,8 +79,8 @@ def decode_function(genome_partial):
     return prod/1000
 
 # Configure the algorithm:
-population_size = 10
-genome_length = 55
+population_size = 30
+genome_length = 66
 ga = GeneticAlgorithm(fitness_function)
 ga.generate_binary_population(size=population_size, genome_length=genome_length)
 
@@ -99,18 +102,19 @@ ga.single_point_cross_over = False # default False
 # You can call the method several times and adjust some parameters
 # (e.g. number_of_pairs, selective_pressure, mutation_rate,
 # allow_random_parent, single_point_cross_over)
-ga.run(10) # default 1000
+ga.run(30) # default 1000
 
 best_genome, best_fitness = ga.get_best_genome()
 
 print("BEST CHROMOSOME IS")
 print(best_genome)
 print("It's decoded value is")
-print("Tau = " + decode_function(best_genome[0:10]))
-print("Gamma = " + decode_function(best_genome[11:22]))
-print("Q_learning = " + decode_function(best_genome[23:33]))
-print("pi_learning = " + decode_function(best_genome[34:44]))
-print("random_epsilon = " + decode_function(best_genome[45:55]))
+print("Tau = " + str(decode_function(best_genome[0:10])))
+print("Gamma = " + str(decode_function(best_genome[11:22])))
+print("Q_learning = " + str(decode_function(best_genome[23:33])))
+print("pi_learning = " + str(decode_function(best_genome[34:44])))
+print("random_epsilon = " + str(decode_function(best_genome[45:55])))
+print("noise_epsilon = " + str(decode_function(best_genome[56:66])))
 
 # If you want, you can have a look at the population:
 population = ga.population

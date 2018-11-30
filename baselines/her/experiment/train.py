@@ -105,7 +105,7 @@ def train(policy, rollout_worker, evaluator,
 
 
 def launch(
-    env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return, polyak_value, gamma_value, q_learning, pi_learning, random_epsilon,
+    env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_interval, clip_return, polyak_value, gamma_value, q_learning, pi_learning, random_epsilon, noise_epsilon,
     override_params={}, save_policies=True,
 ):
     # Fork for multi-CPU MPI implementation.
@@ -146,6 +146,7 @@ def launch(
     params['Q_lr'] = q_learning
     params['pi_lr'] = pi_learning
     params['random_eps'] = random_epsilon
+    params['noise_eps'] = noise_epsilon
     params['replay_strategy'] = replay_strategy
     if env in config.DEFAULT_ENV_PARAMS:
         params.update(config.DEFAULT_ENV_PARAMS[env])  # merge env-specific parameters in
@@ -221,6 +222,7 @@ def launch(
 @click.option('--q_learning', type=float, default=0.001, help='critic learning rate')
 @click.option('--pi_learning', type=float, default=0.001, help='actor learning rate')
 @click.option('--random_epsilon', type=float, default=0.3, help='percentage of time a random action is taken')
+@click.option('--noise_epsilon', type=float, default=0.2, help='std of gaussian noise added to not-completely-random actions as a percentage of max_u')
 def main(**kwargs):
     launch(**kwargs)
 
