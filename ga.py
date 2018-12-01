@@ -61,11 +61,21 @@ def fitness_function(genome):
         bestepochs = epochs
     if epochs < bestepochs:
         bestepochs = epochs
+        with open('BestParameters.txt', 'a') as output:
+            output.write("Epochs taken to converge : " + str(bestepochs) + "\n")
+            output.write("Tau = " + str(decode_function(genome[0:10])) + "\n")
+            output.write("Gamma = " + str(decode_function(genome[11:22])) + "\n")
+            output.write("Q_learning = " + str(Q_lr) + "\n")
+            output.write("pi_learning = " + str(pi_lr) + "\n")
+            output.write("random_epsilon = " + str(decode_function(genome[45:55])) + "\n")
+            output.write("noise_epsilon = " + str(decode_function(genome[56:66])) + "\n")
+            output.write("\n")
+            output.write("=================================================")
+            output.write("\n")
+
+    print('EPOCHS taken to converge:' + str(epochs))
 
     print("Best epochs so far : "+str(bestepochs))
-
-    print('EPOCHS taken to converge:')
-    print(epochs)
     return 1/epochs
 
 def decode_function(genome_partial):
