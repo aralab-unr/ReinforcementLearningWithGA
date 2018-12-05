@@ -21,10 +21,10 @@ def fitness_function(genome):
     gamma = decode_function(genome[11:21])
     if gamma > 1:
         gamma = 1
-    Q_lr = 0.001 #decode_function(genome[22:33])
+    Q_lr = decode_function(genome[22:33])
     if Q_lr > 1:
         Q_lr = 1
-    pi_lr = 0.001 #decode_function(genome[34:44])
+    pi_lr = decode_function(genome[34:44])
     if pi_lr > 1:
         pi_lr = 1
     random_eps = decode_function(genome[45:55])
@@ -34,7 +34,7 @@ def fitness_function(genome):
     if noise_eps > 1:
         noise_eps = 1
     epochs_default = 50 #80
-    env = 'FetchPush-v1'
+    env = 'FetchSlide-v1'
     logdir ='/tmp/openaiGA'
     num_cpu = 4
 
@@ -63,12 +63,12 @@ def fitness_function(genome):
         bestepochs = epochs
         with open('BestParameters.txt', 'a') as output:
             output.write("Epochs taken to converge : " + str(bestepochs) + "\n")
-            output.write("Tau = " + str(decode_function(genome[0:10])) + "\n")
-            output.write("Gamma = " + str(decode_function(genome[11:22])) + "\n")
+            output.write("Tau = " + str(polyak) + "\n")
+            output.write("Gamma = " + str(gamma) + "\n")
             output.write("Q_learning = " + str(Q_lr) + "\n")
             output.write("pi_learning = " + str(pi_lr) + "\n")
-            output.write("random_epsilon = " + str(decode_function(genome[45:55])) + "\n")
-            output.write("noise_epsilon = " + str(decode_function(genome[56:66])) + "\n")
+            output.write("random_epsilon = " + str(random_eps) + "\n")
+            output.write("noise_epsilon = " + str(noise_eps) + "\n")
             output.write("\n")
             output.write("=================================================")
             output.write("\n")
